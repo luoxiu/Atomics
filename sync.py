@@ -18,7 +18,6 @@ print(f'latest release is: {tag_name}')
 latest_file = open('.sync/latest', 'r+')
 
 local_tag_name = latest_file.read()
-print(f'local release is: {local_tag_name}')
 
 if local_tag_name == tag_name:
     print(f'no need to sync, return!')
@@ -26,30 +25,30 @@ if local_tag_name == tag_name:
 
 print('need sync')
 
-current_dir = f'.sync/{tag_name}'
+workdir = f'.sync/{tag_name}'
 
-if not os.path.exists(current_dir):
-    os.makedirs(current_dir) 
+if not os.path.exists(workdir):
+    os.makedirs(workdir) 
 
-zip_file = f'{current_dir}/swift-nio.zip'
+zip_file = f'{workdir}/swift-nio.zip'
 
 print(f'download "{download_url}" to "{zip_file}"...')
 urllib.request.urlretrieve(download_url, zip_file)
 
-print(f'unzip "{zip_file}" to "{current_dir}"...')
+print(f'unzip "{zip_file}"...')
 with zipfile.ZipFile(zip_file, 'r') as zf:
-    zf.extractall(current_dir)
+    zf.extractall(workdir)
 
-def sync_subdir(dir_name, subdir):
+def sync_subdir(dirname, subdir):
     path = f'Sources/{subdir}'
     if os.path.exists(path):
         shutil.rmtree(path)
-    from_dir = os.path.join(current_dir, dir_name, path)
+    from_dir = os.path.join(workdir, dirname, path)
     to_dir = path
     print(f'copy "{from_dir}" to "{to_dir}"...')
     shutil.copytree(from_dir, path)
 
-for filename in os.listdir(current_dir):
+for filename in os.listdir(workdir):
     if filename.startswith('apple-swift-nio'):
         sync_subdir(filename, 'CNIOAtomics')
         sync_subdir(filename, 'NIOConcurrencyHelpers')
@@ -57,5 +56,7 @@ for filename in os.listdir(current_dir):
 latest_file.seek(0)        
 latest_file.write(tag_name)
 latest_file.truncate()
+
+latest_file.close()
 
 print('done!')
