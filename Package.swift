@@ -6,11 +6,12 @@ import PackageDescription
 let package = Package(
     name: "Atomics",
     products: [
-        .library(name: "NIOConcurrencyHelpers", targets: ["NIOConcurrencyHelpers"]),
+        .library(name: "Atomics", targets: ["Atomics"]),
     ],
     targets: [
+        .target(name: "Atomics", dependencies: ["NIOConcurrencyHelpers"]),
         .target(name: "CNIOAtomics"),
         .target(name: "NIOConcurrencyHelpers", dependencies: ["CNIOAtomics"]),
-        .testTarget(name: "AtomicsTests", dependencies: []),
+        .testTarget(name: "AtomicsTests", dependencies: ["Atomics"]),
     ]
 )

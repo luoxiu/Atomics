@@ -1,11 +1,13 @@
 import XCTest
+@testable import Atomics
 
 final class AtomicsTests: XCTestCase {
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-//        XCTAssertEqual(Atomics().text, "Hello, World!")
+        let n = NIOAtomic.makeAtomic(value: 0)
+        n.add(1)
+        n.sub(1)
+        _ = n.compareAndExchange(expected: 0, desired: 1)
+        _ = n.load()
     }
 
     static var allTests = [
